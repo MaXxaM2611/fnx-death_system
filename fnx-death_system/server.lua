@@ -22,14 +22,12 @@ if Config.ESX.Enable then
             MySQL.Async.fetchAll('SELECT isdead FROM users WHERE identifier = @identifier', {
                 ['@identifier'] = identifier
             }, function(result) 
-                if result ~= nil then
-                    if result[1].isdead > 0 then
-                        Death[identifier] = true
-                    else
-                        Death[identifier] = false
-                    end
-                    TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])        
-                end
+		  if result ~= nil and result[1].isdead > 0 then
+		     Death[identifier] = true
+		  else
+	             Death[identifier] = false
+		  end
+		TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])      
             end)
         else
             TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])        
