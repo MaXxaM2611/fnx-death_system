@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD COLUMN `isdead` TINYINT  DEFAULT '0' COLLATE 'utf8mb4_bin';
