@@ -23,7 +23,7 @@ if Config.ESX.Enable then
                 ['@identifier'] = identifier
             }, function(result) 
                 if result ~= nil then
-                    if result[1].isdead > 0 or result[1].isdead then
+                    if result[1].isdead > 0 then
                         Death[identifier] = true
                     else
                         Death[identifier] = false
