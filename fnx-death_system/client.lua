@@ -141,11 +141,17 @@ local Text = function (txt)
     DrawText(0.5, 0.8)
 end
 
-
+--[[
+local isDead = exports["fnx-death_system"]:getDeath()
+exports["fnx-death_system"]:setControlDeath(true/false)
+]]
 
 exports('getDeath',function(c)
     return Local.Death
 end)
+    
+
+
 
 
 exports('setControlDeath',function(bool)
@@ -237,6 +243,7 @@ StartDeathFunction = function ()
     RequestanimDict('missarmenian2')
     RequestanimDict('get_up@directional@movement@from_knees@action')
     RequestanimDict('dead')
+    RequestanimDict('move_fall')
     local playerPed = PlayerPedId()
     while Local.Death do
             ClearPedTasksImmediately(playerPed)
@@ -255,20 +262,40 @@ StartDeathFunction = function ()
             if  Config.NotRpServer.SetBlockingOfNonTemporaryEvents then  
                 SetBlockingOfNonTemporaryEvents(playerPed, true) 
             end
-            TaskPlayAnim(playerPed, 'move_fall', 'land_fall', 8.0, -8.0, -1, 1, 0, 0, 0, 0)
-            SetEntityInvincible(playerPed, true)
-            DeathAnimation()
+
+        DeathAnimation()
         Wait(100)
     end
     return
 end
 
 
-
-
-
 DeathAnimation = function ()
-    local ped = PlayerPedId()
+        ClearPedTasks(PlayerPedId())
+        RequestanimDict('missarmenian2')
+        RequestanimDict('get_up@directional@movement@from_knees@action')
+        RequestanimDict('dead')
+        RequestanimDict('move_fall')
+        local ped = PlayerPedId()
+        local coords = GetEntityCoords(ped)
+        local heading = GetEntityHeading(ped)
+        local Ncoords = {x = (math.floor((coords.x * 10^1) + 0.5) / (10^1)),y = (math.floor((coords.y * 10^1) + 0.5) / (10^1)),z = (math.floor((coords.z * 10^1) + 0.5) / (10^1)), h = (math.floor((heading * 10^1) + 0.5) / (10^1))}
+        ClearPedTasks(ped)
+        SetEntityHealth(ped, GetEntityMaxHealth(ped))
+        ClearPedTasksImmediately(ped)
+        if  Config.NotRpServer.StartScreenEffect then    
+            StartScreenEffect('DeathFailOut', 0, true)        
+        end
+        if  Config.NotRpServer.SetPlayerHealthRechargeMultiplier then    
+            SetPlayerHealthRechargeMultiplier(ped, 0.0)    
+        end
+        SetEntityCoordsNoOffset(ped, Ncoords.x, Ncoords.y, Ncoords.z, false, false, false, true)
+        NetworkResurrectLocalPlayer(Ncoords.x, Ncoords.y, Ncoords.z, Ncoords.h, false, false)
+        if  Config.NotRpServer.TaskPlayAnimland_fall then    
+            TaskPlayAnim(ped, 'move_fall', 'land_fall', 8.0, -8.0, -1, 1, 0, 0, 0, 0)
+        end
+        Wait(1000)
+        TaskPlayAnim(ped, 'missarmenian2', 'corpse_search_exit_ped', 8.0, -8.0, -1, 0, 0, 0, 0, 0)
 	while Local.Death do
             if not IsEntityPlayingAnim(ped, 'missarmenian2', 'corpse_search_exit_ped', 3) then
                 SetEntityInvincible(ped, true)
@@ -360,6 +387,9 @@ Respawn = function ()
         if  Config.NotRpServer.SetBlockingOfNonTemporaryEvents then  
             SetBlockingOfNonTemporaryEvents(ped, false) 
         end
+        if  Config.NotRpServer.StartScreenEffect then    
+            StopScreenEffect('DeathFailOut')
+        end
         TriggerServerEvent("fnx-death_system:updatedeath",false)
         DoScreenFadeOut(800)
         while not IsScreenFadedOut() do
@@ -393,6 +423,9 @@ Revive = function (data)
         end
         if  Config.NotRpServer.SetBlockingOfNonTemporaryEvents then  
             SetBlockingOfNonTemporaryEvents(ped, false) 
+        end
+        if  Config.NotRpServer.StartScreenEffect then    
+            StopScreenEffect('DeathFailOut')
         end
         TriggerServerEvent("fnx-death_system:updatedeath",false)
         DoScreenFadeOut(800)
