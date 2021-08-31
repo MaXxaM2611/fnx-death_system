@@ -1,9 +1,9 @@
 Config = {
 
     ESX = {
-        Enable      = false,
+        Enable      = true,
         RespawnTime = 5 , --Minuti
-        TempRespawn = false,
+        TempRespawn = true,
         TriggerPhone    = "esx_addons_gcphone:startCall",
         CallMessage     = "Aiuto sono ferito, Ecco la mia posizione",
         EventLoaded     = 'esx:playerLoaded',
@@ -80,7 +80,9 @@ Config = {
     Using_mxm_kd_sistem = false,
 
     NotRpServer = {
-
+        StartScreenEffect                    = true,
+        SetPlayerHealthRechargeMultiplier    = true,
+        TaskPlayAnimland_fall                = true,
         SetEntityCompletelyDisableCollision  = false,
         SetEntityVisible                     = false,
         SetEntityLocallyVisible              = false,
