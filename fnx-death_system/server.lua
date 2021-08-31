@@ -22,14 +22,16 @@ if Config.ESX.Enable then
             MySQL.Async.fetchAll('SELECT isdead FROM users WHERE identifier = @identifier', {
                 ['@identifier'] = identifier
             }, function(result) 
-		  if result ~= nil and result[1].isdead > 0 then
-		     Death[identifier] = true
-		  else
-	             Death[identifier] = false
-		  end
-		TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])      
+                if result ~= nil and result[1].isdead > 0 then
+                        Death[identifier] = true
+                else
+                        Death[identifier] = false
+                end
+                Wait(5000)
+                TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])      
             end)
         else
+            Wait(5000)
             TriggerClientEvent("fnx-death_system:updatedeath",src,Death[identifier])        
         end
     end) 
@@ -170,12 +172,14 @@ end)
 
 AddEventHandler('playerDropped', function()
 	local src = source
+    local __ = 0
     if Config.ESX.Enable then
         local identifier = GetIdentifier(src)
         if identifier then
             if Death[identifier] ~= nil then
+                if Death[identifier] then __ = 1 else __ = 0 end
                 MySQL.Async.execute('UPDATE users SET isdead = @isdead WHERE identifier = @identifier', {
-                    ['@isdead'] = Death[identifier], 
+                    ['@isdead'] = __, 
                     ["@identifier"] = identifier
                 }, function(c2)
                 end)
@@ -183,29 +187,3 @@ AddEventHandler('playerDropped', function()
         end
     end
 end)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
